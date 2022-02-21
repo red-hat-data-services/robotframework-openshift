@@ -21,6 +21,7 @@ from openshiftcli.keywords import (
     ServiceKeywords,
     UserKeywords
 )
+from openshiftcli.cliclient import AuthApiClient
 from openshiftcli.cliclient import GenericApiClient
 from openshiftcli.cliclient import ApiClient
 from openshiftcli.dataloader import DataLoader
@@ -40,7 +41,7 @@ __version__ = VERSION
 class openshiftcli(DynamicCore):
     """
      This Test library provides keywords to work with openshift
-      and various helper methods to check pod, service and rfrom .version import VERSIONelated
+      and various helper methods to check pod, service and related
       functionality via RobotFramework
     """
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
@@ -49,6 +50,7 @@ class openshiftcli(DynamicCore):
     def __init__(self) -> None:
         libraries = [
             GenericKeywords(
+                AuthApiClient(),
                 GenericApiClient(),
                 DataLoader(),
                 DataParser(),

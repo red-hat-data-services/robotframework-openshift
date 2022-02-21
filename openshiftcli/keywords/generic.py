@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from robotlibcore import keyword
 
+from openshiftcli.cliclient.authclient import AuthClient
 from openshiftcli.cliclient import GenericClient
 from openshiftcli.dataloader import DataLoader
 from openshiftcli.dataparser import DataParser
@@ -17,9 +18,10 @@ from openshiftcli.templateloader import TemplateLoader
 
 
 class GenericKeywords(object):
-    def __init__(self, client: GenericClient, data_loader: DataLoader,
+    def __init__(self, auth_client: AuthClient, client: GenericClient, data_loader: DataLoader,
                  data_parser: DataParser, output_formatter: OutputFormatter,
                  output_streamer: OutputStreamer, template_loader: TemplateLoader) -> None:
+        self.auth_client = auth_client
         self.client = client
         self.data_loader = data_loader
         self.data_parser = data_parser
@@ -29,7 +31,7 @@ class GenericKeywords(object):
 
     @keyword
     def oc_apply(self, kind: str, src: str, namespace: Optional[str] = None,
-              **kwargs: Optional[str]) -> List[Dict[str, Any]]:
+                 **kwargs: Optional[str]) -> List[Dict[str, Any]]:
         """Applies Resource/s definition/s on one or more Resources
 
         Args:
@@ -45,7 +47,7 @@ class GenericKeywords(object):
 
     @keyword
     def oc_create(self, kind: str, src: str, namespace: Optional[str] = None,
-               **kwargs: Optional[str]) -> List[Dict[str, Any]]:
+                  **kwargs: Optional[str]) -> List[Dict[str, Any]]:
         """Creates one or multiple Resources
 
         Args:
@@ -60,8 +62,8 @@ class GenericKeywords(object):
 
     @keyword
     def oc_delete(self, kind: str, src: Optional[str] = None, name: Optional[str] = None,
-               namespace: Optional[str] = None, label_selector: Optional[str] = None,
-               field_selector: Optional[str] = None, **kwargs: str) -> List[Dict[str, Any]]:
+                  namespace: Optional[str] = None, label_selector: Optional[str] = None,
+                  field_selector: Optional[str] = None, **kwargs: str) -> List[Dict[str, Any]]:
         """Deletes one or more Resources
 
         Args:
@@ -110,8 +112,8 @@ class GenericKeywords(object):
 
     @keyword
     def oc_get(self, kind: str, name: Optional[str] = None, namespace: Optional[str] = None,
-            label_selector: Optional[str] = None, field_selector: Optional[str] = None,
-            **kwargs: str) -> List[Dict[str, Any]]:
+               label_selector: Optional[str] = None, field_selector: Optional[str] = None,
+               **kwargs: str) -> List[Dict[str, Any]]:
         """Gets Resource/s
 
         Args:
@@ -132,21 +134,49 @@ class GenericKeywords(object):
             self._handle_error(operation, "Not Found")
         self._generate_output(operation, result)
         return result
-    
+
     @keyword
     def oc_get_pod_logs(self, name: str, namespace: str, **kwargs: Optional[str]) -> str:
+        """Gets Pod Logs
+        
+            Args:
+            name (str): Name of the pod to get the logs
+            namespace (str): Namespace where the pod exists
+
+        Returns:
+            str: Pod Logs
+        """
         result = None
         operation = 'get pod logs'
-        try: 
+        try:
             result = self.client.get_pod_logs(name, namespace, **kwargs)
         except Exception as error:
             self._handle_error(operation, error)
         self._generate_output(operation, result)
         return result
-    
+
+    @keyword
+    def oc_login(self, host: str, username: str, password: str,
+                 ssl_ca_cert: Optional[str] = None) -> None:
+        """Logs in to Cluster
+
+        Args:
+            host (str): Cluster url
+            username (str): User name
+            password (str): User password
+            ssl_ca_cert (Optional[str], optional): Path to client certificate. Defaults to None.
+        """
+        operation = 'login'
+        try:
+            token = self.auth_client.login(host, username, password, ssl_ca_cert)
+            self.client.reload_config(token, host, ssl_ca_cert)
+        except Exception as error:
+            self._handle_error(operation, error)
+        self._generate_output(operation, f"Successfully connected to {host}")
+
     @keyword
     def oc_patch(self, kind: str, src: str, name: str, namespace: Optional[str] = None,
-              **kwargs: str) -> Dict[str, Any]:
+                 **kwargs: str) -> Dict[str, Any]:
         """Updates Fields of the Resource using JSON merge patch
 
         Args:
@@ -172,9 +202,9 @@ class GenericKeywords(object):
 
     @keyword
     def oc_watch(self, kind: str, namespace: Optional[str] = None, name: Optional[str] = None,
-              label_selector: Optional[str] = None, field_selector: Optional[str] = None,
-              resource_version: Optional[str] = None,
-              timeout: Optional[int] = 60) -> List[Dict[str, Any]]:
+                 label_selector: Optional[str] = None, field_selector: Optional[str] = None,
+                 resource_version: Optional[str] = None,
+                 timeout: Optional[int] = 60) -> List[Dict[str, Any]]:
         """Watches changes in one or more Resources
 
         Args:
@@ -258,7 +288,10 @@ class GenericKeywords(object):
         try:
             result = getattr(self.client, operation)(kind, **arguments)
         except Exception as error:
-            self._handle_error(operation, error)
+            error_reason = error
+            if 'forbidden' in str(error):
+                error_reason = f"Operation Forbidden. Please Log in to cluster."
+            self._handle_error(operation, error_reason)
         return result
 
     def _handle_error(self, operation: str, error_reason: str) -> None:

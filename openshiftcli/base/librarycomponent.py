@@ -84,7 +84,10 @@ class LibraryComponent(object):
             self.output_streamer.stream(error_message, "error")
             raise ResourceOperationFailed(error_message)
         except Exception as error:
-            error_message = f"{operation.capitalize()} failed:\n{error}"
+            error_reason = error
+            if 'forbidden' in str(error):
+                error_reason = f"Operation Forbidden. Please Log in to cluster."
+            error_message = f"{operation.capitalize()} failed:\n{error_reason}"
             self.output_streamer.stream(error_message, "error")
             raise ResourceOperationFailed(error_message)
         return result

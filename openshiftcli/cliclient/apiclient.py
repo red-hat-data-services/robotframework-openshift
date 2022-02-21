@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from kubernetes import config
+from kubernetes import client, config
 from openshift.dynamic import DynamicClient
 
 from openshiftcli.cliclient import CliClient
@@ -10,7 +10,6 @@ class ApiClient(CliClient):
 
     def __init__(self, api_version: str, kind: str) -> None:
         self.api_version = api_version
-        self.client = DynamicClient(config.new_client_from_config())
         self.kind = kind
 
     def apply(self, body: str, namespace: Optional[str] = None) -> Dict[str, Any]:
@@ -46,6 +45,15 @@ class ApiClient(CliClient):
               name: Optional[str] = None,
               timeout: Optional[int] = None) -> Dict[str, Any]:
         return self._get_resources().watch(namespace=namespace, name=name, timeout=timeout)
+          
+    def reload_config(self) -> None:
+        configuration = config.load_kube_config()
+        self.dynamic_client = DynamicClient(client.ApiClient(configuration))
 
     def _get_resources(self) -> Any:
-        return self.client.resources.get(api_version=self.api_version, kind=self.kind)
+        try:
+            getattr(self, 'dynamic_client')
+        except AttributeError:
+            self.reload_config()
+
+        return self.dynamic_client.resources.get(api_version=self.api_version, kind=self.kind)

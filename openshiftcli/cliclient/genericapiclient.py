@@ -1,15 +1,14 @@
 from typing import Any, Dict, List, Optional
 
-from kubernetes import config
+from kubernetes import client, config
 from openshift.dynamic import DynamicClient
 
-from openshiftcli.cliclient import GenericClient
 from urllib import parse
 
-class GenericApiClient(GenericClient):
+from openshiftcli.cliclient import GenericClient
 
-    def __init__(self) -> None:
-        self.dynamic_client = DynamicClient(config.new_client_from_config())
+
+class GenericApiClient(GenericClient):
 
     def apply(self, kind: str, body: str, namespace: Optional[str] = None,
               **kwargs: str) -> Dict[str, Any]:
@@ -57,7 +56,27 @@ class GenericApiClient(GenericClient):
                                                       timeout=timeout)
         return [{'type': event['type'], 'object': event['object'].to_dict()} for event in events]
 
+    def reload_config(self, token: Optional[str] = None,
+                      host: Optional[str] = None,
+                      ssl_ca_cert: Optional[str] = None) -> None:
+        if token and host:
+            configuration = client.Configuration()
+            configuration.api_key['authorization'] = token
+            configuration.api_key_prefix['authorization'] = 'Bearer'
+            configuration.host = host
+            configuration.ssl_ca_cert = ssl_ca_cert
+            configuration.verify_ssl = True if ssl_ca_cert else False
+        else:
+            configuration = config.load_kube_config()
+
+        self.dynamic_client = DynamicClient(client.ApiClient(configuration))
+
     def _get_resources(self, kind: str) -> Any:
+        try:
+            getattr(self, 'dynamic_client')
+        except AttributeError:
+            self.reload_config()
+
         return self.dynamic_client.resources.get(api_version=self._get_api_version(kind=kind),
                                                  kind=kind)
 

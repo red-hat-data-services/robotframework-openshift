@@ -296,7 +296,6 @@ class GenericKeywords(object):
 
     def _handle_error(self, operation: str, error_reason: str) -> None:
         error_message = f"{operation.capitalize()} failed\nReason: {error_reason}"
-        self.output_streamer.stream(error_message, 'error')
         raise ResourceOperationFailed(error_message)
 
     def _generate_output(self, operation: str,

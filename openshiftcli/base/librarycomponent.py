@@ -109,7 +109,6 @@ class LibraryComponent(object):
                 result = result['items']
                 if not result:
                     error_message = f"{kind.replace('List', '')}s not found"
-                    self.output_streamer.stream(error_message, "error")
                     raise ResourceNotFound(error_message)
                 output_message = f"{kind.replace('List', '')}s found"
                 output_type = "name"

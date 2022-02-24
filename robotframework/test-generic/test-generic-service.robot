@@ -14,27 +14,21 @@ Test Generic Keywords Kind Service
   Oc Create  kind=Service  src=https://api.github.com/repos/pablofelix/robotframework-OpenShiftCLI/contents/test-data/service.yaml?ref\=/master  namespace=test-services
   Oc Create  kind=Service  src=test-data/services.yaml  namespace=test-services
   Run Keyword And Expect Error   AttributeError: 'str' object has no attribute 'get'	
-  ...  Oc Apply  Service  test-data/service_apply_creat.yaml
+  ...  Oc Apply  kind=Service  src=test-data/service_apply_creat.yaml
   Run Keyword And Expect Error   ResourceOperationFailed: Apply failed\nReason: Namespace is required for v1.Service	
-  ...  Oc Apply  Service  test-data/service_apply_create.yaml
-  Oc Apply  Service  test-data/service_apply_create.yaml  test-services
+  ...  Oc Apply  kind=Service  src=test-data/service_apply_create.yaml
+  Oc Apply  kind=Service  src=test-data/service_apply_create.yaml  namespace=test-services
   Oc Create  kind=Service  src=test-data/service_create.yaml  namespace=test-services
   Oc Apply  kind=Service  src=test-data/service_apply.yaml  namespace=test-services
   Oc Create  kind=Service  src=test-data/service_delete.yaml  namespace=test-services
   Oc Get  kind=Service  namespace=test-services
   Oc Get  Service
   Oc Get  kind=Service
-  Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Get failed\nReason: 404\nReason: Not Found
-  ...  Oc Get  Service  test-services 
   Oc Get  kind=Service  namespace=test-services
   Run Keyword And Expect Error  ResourceOperationFailed: Get failed\nReason: Not Found
   ...  Oc Get  kind=Service  name=my-service-4  namespace=test-services
-  Run Keyword And Expect Error  ResourceOperationFailed: Get failed\nReason: Not Found
-  ...  Oc Get  Service  my-service-4  test-services
   Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Get failed\nReason: 404\nReason: Not Found
   ...  Oc Get  kind=Service  name=my-service-4
-  Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Get failed\nReason: 404\nReason: Not Found
-  ...  Oc Get  Service  my-service-4
   Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Get failed\nReason: 404\nReason: Not Found
   ...  Oc Get  kind=Service  namespace=test-services  name=my-service-6
   Oc Get  kind=Service  label_selector=environment=production  namespace=test-services

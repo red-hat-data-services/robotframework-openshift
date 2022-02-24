@@ -11,10 +11,8 @@ Test Generic Keywords Kind Project
   Run Keyword And Expect Error  ResourceOperationFailed: Get failed\nReason: Not Found
   ...  Oc Get  kind=Project  name=test-projects
   Oc Get  kind=Project  namespace=test-projects
-  Run Keyword And Expect Error  AttributeError: 'str' object has no attribute 'get'
-  ...  Oc Delete  Project  test-projects
   Run Keyword And Expect Error  ResourceOperationFailed: Delete failed\nReason: Src or at least one of name, label_selector or field_selector is required, but not both 	
-  ...  Oc Delete  Project  None  test-projects
+  ...  Oc Delete  kind=Project  src=None  name=test-projects
   Oc Delete  kind=Project  name=test-projects
 
 Test Generic Keywords Kind Deployment
@@ -115,6 +113,8 @@ Test Generic Keywords Kind Event
   New Project  test-events
   Oc Get  kind=Event  namespace=redhat-ods-applications
   Oc Delete  kind=Project  name=test-events
+
+
 
 
 

@@ -30,44 +30,50 @@ class GenericKeywords(object):
         self.template_loader = template_loader
 
     @keyword
-    def oc_apply(self, kind: str, src: str, namespace: Optional[str] = None,
+    def oc_apply(self, kind: str, src: str, api_version: Optional[str] = None, namespace: Optional[str] = None,
                  **kwargs: Optional[str]) -> List[Dict[str, Any]]:
         """Applies Resource/s definition/s on one or more Resources
 
         Args:
             kind (str): Resource/s kind/s
             src (str): Path/Url/String containing the yaml or json with the Resource/s definition/s
+            api_version (Optional[str], optional): Resource Api Version. Defaults to None.
             namespace (Optional[str], optional): Namespace where the Resource/s exist/s or will be
                                        created. Defaults to None.
 
         Returns:
             List[Dict[str, Any]]: List containing the apply operation/s result/s
         """
-        return self._apply_or_create(kind, 'apply', src, namespace=namespace, **kwargs)
+        return self._apply_or_create(kind, 'apply', src, api_version=api_version,
+                                     namespace=namespace, **kwargs)
 
     @keyword
-    def oc_create(self, kind: str, src: str, namespace: Optional[str] = None,
+    def oc_create(self, kind: str, src: str, api_version: Optional[str] = None, namespace: Optional[str] = None,
                   **kwargs: Optional[str]) -> List[Dict[str, Any]]:
         """Creates one or multiple Resources
 
         Args:
             kind (str): Resource/s kind/s
             src (str): Path/Url/String containing the yaml or json with the Resource/s definition/s
+            api_version (Optional[str], optional): Resource Api Version. Defaults to None.
             namespace (Optional[str], optional): Namespace where the Resource/s will be created. Defaults to None.
 
         Returns:
             List[Dict[str, Any]]: List containing the create operation/s result/s
         """
-        return self._apply_or_create(kind, 'create', src, namespace=namespace, **kwargs)
+        return self._apply_or_create(kind, 'create', src, api_version=api_version,
+                                     namespace=namespace, **kwargs)
 
     @keyword
-    def oc_delete(self, kind: str, src: Optional[str] = None, name: Optional[str] = None,
-                  namespace: Optional[str] = None, label_selector: Optional[str] = None,
-                  field_selector: Optional[str] = None, **kwargs: str) -> List[Dict[str, Any]]:
+    def oc_delete(self, kind: str, api_version: Optional[str] = None, src: Optional[str] = None,
+                  name: Optional[str] = None, namespace: Optional[str] = None,
+                  label_selector: Optional[str] = None, field_selector: Optional[str] = None,
+                  **kwargs: str) -> List[Dict[str, Any]]:
         """Deletes one or more Resources
 
         Args:
             kind (str): Resource/s kind/s
+            api_version (Optional[str], optional): Resource Api Version. Defaults to None.
             src (str): Path/Url/String containing the yaml or json with the Resource/s definition/s
             name (Optional[str], optional): Name of the Resource to delete
             namespace (Optional[str], optional): Namespace where the Resource/s to delete exist/s. Defaults to None.
@@ -93,31 +99,34 @@ class GenericKeywords(object):
         if src and not (name or label_selector or field_selector):
             items = self._get_items(operation, src, kwargs.pop('template_data', None))
             if kind == 'List':
-                result = [self._operate(kind, operation, body=item,
+                result = [self._operate(kind, operation,
+                                        api_version=api_version, body=item,
                                         namespace=namespace or item.get('metadata', {}).get('namespace'),
                                         **kwargs) for item in items]
             else:
                 result = [self._operate(kind, operation,
+                                        api_version=api_version,
                                         name=item.get('metadata', {}).get('name'),
                                         namespace=namespace or item.get('metadata', {}).get('namespace'),
                                         label_selector=item.get('metadata', {}).get('label_selector'),
                                         field_selector=item.get('metadata', {}).get('field_selector'),
                                         **kwargs) for item in items]
         if not src and (name or label_selector or field_selector):
-            result = [self._operate(kind, operation, name=name,
+            result = [self._operate(kind, operation, api_version=api_version, name=name,
                                     namespace=namespace, label_selector=label_selector,
                                     field_selector=field_selector, **kwargs)]
         self._generate_output(operation, result)
         return result
 
     @keyword
-    def oc_get(self, kind: str, name: Optional[str] = None, namespace: Optional[str] = None,
+    def oc_get(self, kind: str, api_version: Optional[str] = None, name: Optional[str] = None, namespace: Optional[str] = None,
                label_selector: Optional[str] = None, field_selector: Optional[str] = None,
                **kwargs: str) -> List[Dict[str, Any]]:
         """Gets Resource/s
 
         Args:
             kind (str): Resource/s kind/s
+            api_version (Optional[str], optional): Resource Api Version. Defaults to None.
             name (Optional[str], optional): Resource name. Defaults to None.
             namespace (Optional[str], optional): Namespace where the Resource/s exist/s. Defaults to None.
             label_selector (Optional[str], optional): Label Selector of the Resource/s. Defaults to None.
@@ -127,8 +136,9 @@ class GenericKeywords(object):
             List[Dict[str, Any]]: List containing the get operation/s result/s
         """
         operation = 'get'
-        arguments = {'name': name, 'namespace': namespace, 'label_selector': label_selector,
-                     'field_selector': field_selector, **kwargs}
+        arguments = {'api_version': api_version, 'name': name, 'namespace': namespace,
+                     'label_selector': label_selector, 'field_selector': field_selector,
+                     **kwargs}
         result = self._operate(kind, operation, **arguments).get('items')
         if not result:
             self._handle_error(operation, "Not Found")
@@ -138,7 +148,7 @@ class GenericKeywords(object):
     @keyword
     def oc_get_pod_logs(self, name: str, namespace: str, **kwargs: Optional[str]) -> str:
         """Gets Pod Logs
-        
+
             Args:
             name (str): Name of the pod to get the logs
             namespace (str): Namespace where the pod exists
@@ -175,13 +185,14 @@ class GenericKeywords(object):
         self._generate_output(operation, f"Successfully connected to {host}")
 
     @keyword
-    def oc_patch(self, kind: str, src: str, name: str, namespace: Optional[str] = None,
-                 **kwargs: str) -> Dict[str, Any]:
+    def oc_patch(self, kind: str, src: str, name: str, api_version: Optional[str] = None,
+                 namespace: Optional[str] = None, **kwargs: str) -> Dict[str, Any]:
         """Updates Fields of the Resource using JSON merge patch
 
         Args:
             kind (str): Resource kind
             src (str): Path/Url/String containing the json with the Resource patch
+            api_version (Optional[str], optional): Resource Api Version. Defaults to None.
             name (str): Name of Resource to patch
             namespace (Optional[str], optional): Namespace where the Resource Exists. Defaults to None.
 
@@ -194,14 +205,15 @@ class GenericKeywords(object):
         if kind and not (src and name):
             self._handle_error(operation, "Src and name are required")
         body = self._parse_data(operation, self._load_data(operation, src))[0]
-        arguments = {'name': name, 'body': body, 'namespace': namespace,
+        arguments = {'api_version': api_version, 'name': name, 'body': body, 'namespace': namespace,
                      'content_type': 'application/merge-patch+json', **kwargs}
         result = self._operate(kind, operation, **arguments)
         self._generate_output(operation, result)
         return result
 
     @keyword
-    def oc_watch(self, kind: str, namespace: Optional[str] = None, name: Optional[str] = None,
+    def oc_watch(self, kind: str, api_version: Optional[str] = None,
+                 namespace: Optional[str] = None, name: Optional[str] = None,
                  label_selector: Optional[str] = None, field_selector: Optional[str] = None,
                  resource_version: Optional[str] = None,
                  timeout: Optional[int] = 60) -> List[Dict[str, Any]]:
@@ -209,6 +221,7 @@ class GenericKeywords(object):
 
         Args:
             kind (str): Resource/s kind/s
+            api_version (Optional[str], optional): Resource Api Version. Defaults to None.
             name (Optional[str], optional): Resource name. Defaults to None.
             namespace (Optional[str], optional): Namespace where the Resource/s exist/s. Defaults to None.
             label_selector (Optional[str], optional): Label Selector of the Resource/s. Defaults to None.
@@ -222,19 +235,19 @@ class GenericKeywords(object):
         operation = 'watch'
         if not kind:
             self._handle_error(operation, "Kind is required")
-        arguments = {'name': name, 'namespace': namespace, 'label_selector': label_selector,
+        arguments = {'api_version': api_version, 'name': name, 'namespace': namespace, 'label_selector': label_selector,
                      'field_selector': field_selector, 'resource_version': resource_version,
                      'timeout': timeout}
         result = self._operate(kind, operation, **arguments)
         self._generate_output(operation, result)
         return result
 
-    def _apply_or_create(self, kind: str, operation: str, src: str, namespace: Optional[str] = None,
-                         **kwargs: Optional[str]) -> List[Dict[str, Any]]:
+    def _apply_or_create(self, kind: str, operation: str, src: str, api_version: Optional[str] = None,
+                         namespace: Optional[str] = None, **kwargs: Optional[str]) -> List[Dict[str, Any]]:
         if not (kind and src):
             self._handle_error(operation, "Kind and src are required")
         items = self._get_items(operation, src, kwargs.pop('template_data', None))
-        result = [self._operate(kind, operation, body=item,
+        result = [self._operate(kind, operation, api_version=api_version, body=item,
                                 namespace=namespace or item.get('metadata', {}).get('namespace'),
                                 **kwargs) for item in items]
         self._generate_output(operation, result)

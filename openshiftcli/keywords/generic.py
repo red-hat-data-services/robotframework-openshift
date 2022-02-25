@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from robotlibcore import keyword
 
-from openshiftcli.cliclient.authclient import AuthClient
-from openshiftcli.cliclient import GenericClient
+from openshiftcli.client.authclient import AuthClient
+from openshiftcli.client import GenericClient
 from openshiftcli.dataloader import DataLoader
 from openshiftcli.dataparser import DataParser
 from openshiftcli.errors import ResourceOperationFailed

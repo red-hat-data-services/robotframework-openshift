@@ -8,8 +8,7 @@ Test Generic Keywords Kind Project
   Oc Get  kind=Project  api_version=project.openshift.io/v1
   Oc Get  kind=Project  api_version=project.openshift.io/v1  field_selector=metadata.name==test-projects
   Oc Get  kind=Project  api_version=project.openshift.io/v1  field_selector=metadata.name==rhods-notebooks
-  Run Keyword And Expect Error  ResourceOperationFailed: Get failed\nReason: Not Found
-  ...  Oc Get  kind=Project  api_version=project.openshift.io/v1  name=test-projects
+  Oc Get  kind=Project  api_version=project.openshift.io/v1  name=test-projects
   Oc Get  kind=Project  api_version=project.openshift.io/v1  namespace=test-projects
   Run Keyword And Expect Error  ResourceOperationFailed: Delete failed\nReason: Src or at least one of name, label_selector or field_selector is required, but not both 	
   ...  Oc Delete  kind=Project  api_version=project.openshift.io/v1  src=None  name=test-projects

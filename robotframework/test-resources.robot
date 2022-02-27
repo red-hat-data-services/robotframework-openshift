@@ -25,23 +25,22 @@ Test Service
   Oc Get  Service
   Oc Get  kind=Service
   Oc Get  kind=Service  namespace=test-services
-  Run Keyword And Expect Error  ResourceOperationFailed: Get failed\nReason: Not Found
-  ...  Oc Get  kind=Service  name=my-service-4  namespace=test-services
-  Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Get failed\nReason: 404\nReason: Not Found
-  ...  Oc Get  kind=Service  name=my-service-4
-  Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Get failed\nReason: 404\nReason: Not Found
+  Oc Get  kind=Service  name=my-service-4
+  Oc Get  kind=Service  name=my-service-4  namespace=test-services
+  Oc Get  kind=Service  namespace=test-services  name=my-service-4
+  Oc Get  kind=Service  field_selector=metadata.name==my-service-4  namespace=test-services
+  Oc Get  kind=Service  namespace=test-services  field_selector=metadata.name==my-service-4    
+  Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Get failed\nReason: Not Found
   ...  Oc Get  kind=Service  namespace=test-services  name=my-service-6
   Oc Get  kind=Service  label_selector=environment=production  namespace=test-services
-  Oc Get  kind=Service  field_selector=metadata.name==my-service-4  namespace=test-services
   Services Should Contain  my-service  namespace=test-services
   Oc Patch  kind=Service  name=my-service-4  src={"spec": {"ports": [{"name": "https", "protocol": "TCP", "port": 443, "targetPort": 9377}]}}  namespace=test-services
   Oc Patch  kind=Service  name=my-service-4  src={"metadata": {"labels": {"environment": "stage"}}}  namespace=test-services
   Oc Patch  kind=Service  name=my-service-4  src={"metadata": {"labels": {"newlabel": "newvalue"}}}  namespace=test-services
   Oc Watch  kind=Service  namespace=test-services 
-  Run Keyword And Expect Error  STARTS: ResourceOperationFailed: Watch failed\nReason: 404\nReason: Not Found
-  ...  Oc Watch  kind=Service  name=my-service-4
-  Run Keyword And Expect Error  ResourceOperationFailed: Watch failed\nReason: Response is not chunked. Header 'transfer-encoding: chunked' is missing.
-  ...  Oc Watch  kind=Service  namespace=test-services  name=my-service-4
+  Oc Watch  kind=Service  name=my-service-4
+  Oc Watch  kind=Service  namespace=test-services  name=my-service-4
+  Oc Watch  kind=Service  name=my-service-4  namespace=test-services
   Oc Watch  kind=Service  namespace=test-services  label_selector=environment=stage
   Oc Watch  kind=Service  namespace=test-services  field_selector=metadata.name==my-service-4
   Oc Watch  kind=Service  namespace=test-services  resource_version=0
@@ -68,11 +67,10 @@ Test Project
   New Project  test-projects
   Wait Until Project Exists  test-projects
   Oc Get  kind=Project
+  Oc Get  kind=Project  namespace=test-projects
+  Oc Get  kind=Project  name=test-projects
   Oc Get  kind=Project  field_selector=metadata.name==test-projects
   Oc Get  kind=Project  field_selector=metadata.name==rhods-notebooks
-  Run Keyword And Expect Error  ResourceOperationFailed: Get failed\nReason: Not Found
-  ...  Oc Get  kind=Project  name=test-projects
-  Oc Get  kind=Project  namespace=test-projects
   Projects Should Contain  test-projects
   Run Keyword And Expect Error  ResourceOperationFailed: Delete failed\nReason: Src or at least one of name, label_selector or field_selector is required, but not both 	
   ...  Oc Delete  kind=Project  src=None  name=test-projects

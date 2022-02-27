@@ -136,7 +136,13 @@ class GenericKeywords(object):
             List[Dict[str, Any]]: List containing the get operation/s result/s
         """
         operation = 'get'
-        arguments = {'api_version': api_version, 'name': name, 'namespace': namespace,
+
+        if name and field_selector:
+            field_selector = f"metadata.name=={name},{field_selector}"
+        elif name and not field_selector:
+            field_selector = f"metadata.name=={name}"
+        self.output_streamer.stream(field_selector, 'info')
+        arguments = {'api_version': api_version, 'namespace': namespace,
                      'label_selector': label_selector, 'field_selector': field_selector,
                      **kwargs}
         result = self._operate(kind, operation, **arguments).get('items')
@@ -235,7 +241,13 @@ class GenericKeywords(object):
         operation = 'watch'
         if not kind:
             self._handle_error(operation, "Kind is required")
-        arguments = {'api_version': api_version, 'name': name, 'namespace': namespace, 'label_selector': label_selector,
+        
+        if name and field_selector:
+            field_selector = f"metadata.name=={name},{field_selector}"
+        elif name and not field_selector:
+            field_selector = f"metadata.name=={name}"
+
+        arguments = {'api_version': api_version, 'namespace': namespace, 'label_selector': label_selector,
                      'field_selector': field_selector, 'resource_version': resource_version,
                      'timeout': timeout}
         result = self._operate(kind, operation, **arguments)

@@ -121,7 +121,7 @@ class GenericKeywords(object):
     @keyword
     def oc_get(self, kind: str, api_version: Optional[str] = None, name: Optional[str] = None, namespace: Optional[str] = None,
                label_selector: Optional[str] = None, field_selector: Optional[str] = None,
-               **kwargs: str) -> List[Dict[str, Any]]:
+               fields: Optional[List] = None, **kwargs: str) -> List[Dict[str, Any]]:
         """Gets Resource/s
 
         Args:
@@ -131,6 +131,7 @@ class GenericKeywords(object):
             namespace (Optional[str], optional): Namespace where the Resource/s exist/s. Defaults to None.
             label_selector (Optional[str], optional): Label Selector of the Resource/s. Defaults to None.
             field_selector (Optional[str], optional): Field Selector of the Resource/s. Defaults to None.
+            fields (Optional[List], optional): Fields to filter the result. Defaults to None.
 
         Returns:
             List[Dict[str, Any]]: List containing the get operation/s result/s
@@ -141,15 +142,24 @@ class GenericKeywords(object):
             field_selector = f"metadata.name=={name},{field_selector}"
         elif name and not field_selector:
             field_selector = f"metadata.name=={name}"
-        self.output_streamer.stream(field_selector, 'info')
+
         arguments = {'api_version': api_version, 'namespace': namespace,
                      'label_selector': label_selector, 'field_selector': field_selector,
                      **kwargs}
-        result = self._operate(kind, operation, **arguments).get('items')
-        if not result:
+        result = self._operate(kind, operation, **arguments)
+
+        if isinstance(result, Dict):
+            items = result.get('items')
+
+        if not items:
             self._handle_error(operation, "Not Found")
-        self._generate_output(operation, result)
-        return result
+
+        if fields:
+            items = self._filter(items, fields)
+
+        self._generate_output(operation, items)
+
+        return items
 
     @keyword
     def oc_get_pod_logs(self, name: str, namespace: str, **kwargs: Optional[str]) -> str:
@@ -241,7 +251,7 @@ class GenericKeywords(object):
         operation = 'watch'
         if not kind:
             self._handle_error(operation, "Kind is required")
-        
+
         if name and field_selector:
             field_selector = f"metadata.name=={name},{field_selector}"
         elif name and not field_selector:
@@ -251,6 +261,7 @@ class GenericKeywords(object):
                      'field_selector': field_selector, 'resource_version': resource_version,
                      'timeout': timeout}
         result = self._operate(kind, operation, **arguments)
+
         self._generate_output(operation, result)
         return result
 
@@ -342,3 +353,32 @@ class GenericKeywords(object):
         except Exception as e:
             return False
         return True
+
+    def _filter(self, items: List[Dict[str, Any]], fields: List) -> List[Dict[str, Any]]:
+        splitted_fields = [item.split('.') for item in fields]
+        filtered_items = []
+        for item in items:
+            filtered_item = {}
+            for index, field_list in enumerate(splitted_fields):
+                subitem = item
+                for field in field_list:
+                    if isinstance(subitem, List):
+                        subitem = [self._filter_one(item, field) for item in subitem]
+                    else:
+                        subitem = self._filter_one(subitem, field)
+                filtered_item[fields[index]] = subitem if subitem is not None else "Field does not exist"
+            filtered_items.append(filtered_item)
+        return filtered_items
+
+    def _filter_one(self, item: Union[Dict[str, Any], List[Dict[str, Any]]], field: str) -> Union[Dict[str, Any], str]:
+        if '[' in field and ']' in field:
+            item = item.get(field[0:-3], None) or item.get(field[0: -2], None)
+            if item:
+                str_idx = field[-2:-1]
+                if str_idx is not '*' and str_idx is not '[':
+                    idx = int(str_idx) if str_idx.isdecimal() else None
+                    item = item[idx] if idx is not None and idx < len(item) else None
+        else:
+            item = item.get(field, None) if isinstance(item, Dict) else None
+
+        return item if item is not None else "Field does not exist"

@@ -18,20 +18,20 @@ from setuptools import setup, find_packages
 
 
 DESCRIPTION = """
-This test library provides  keywords to interact with
+This library provides keywords to interact with
 Openshift Cluster and perform various operations.
-"""[1:-1]
+"""
 
 setup(
-    name='robotframework-OpenShiftLibrary',
-    version='1.0.1',
-    description="Robotframework for OpenShift interactions via CLI",
+    name='robotframework-openshift',
+    version='1.0.0',
+    description="Robotframework for OpenShift interactions",
     long_description=DESCRIPTION,
     author='Pablo Félix Estévez Pico',
     author_email='pestevez@redhat.com',
-    url='https://github.com/red-hat-data-services/robotframework-OpenShiftLibrary',
+    url='https://github.com/red-hat-data-services/robotframework-openshift',
     license='Apache License 2.0',
-    keywords='robotframework openshift cli',
+    keywords='robotframework openshift',
     platforms='any',
     install_requires=[
         "reportportal-client",

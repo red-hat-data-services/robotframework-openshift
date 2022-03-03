@@ -1,14 +1,14 @@
-# Robotframework Openshiftcli Library
-Openshiftcli (a.k.a OpenshiftLibrary) is a robotframework library for [Kubernetes](https://kubernetes.io) and [OpenShift](https://openshift.com) APIs. The project is hosted on GitHub and downloads can be found from PyPI
+# Robotframework OpenShiftLibrary Library
+OpenShiftLibrary (a.k.a OpenshiftLibrary) is a robotframework library for [Kubernetes](https://kubernetes.io) and [OpenShift](https://openshift.com) APIs. The project is hosted on GitHub and downloads can be found from PyPI
 
 # Installation
 The recommended installation method is using pip:
 ```
-pip install pip robotframework-openshiftcli
+pip install pip robotframework-OpenShiftLibrary
 ```
 To install latest source from the master branch, use this command:
 ``` 
-pip install git+https://github.com/red-hat-data-services/robotframework-openshiftcli.git
+pip install git+https://github.com/red-hat-data-services/robotframework-OpenShiftLibrary.git
 ```
 # Usage
 ## Keyword Documentation
@@ -20,14 +20,14 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 python3 task.py
 ```
-a new folder will be created /docs/ with the documentation openshiftcli.html
+a new folder will be created /docs/ with the documentation OpenShiftLibrary.html
 
 ## Example
 
 ```
 *** Settings ***
-Documentation     openshiftcli Library
-Library      openshiftcli
+Documentation     OpenShiftLibrary Library
+Library      OpenShiftLibrary
 
 *** Test Cases ***
 Test Generic Keywords Kind Project

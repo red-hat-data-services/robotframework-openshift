@@ -2,10 +2,10 @@ from typing import Optional
 
 from robotlibcore import keyword
 
-from openshiftcli.client import GenericClient
-from openshiftcli.outputformatter import OutputFormatter
-from openshiftcli.outputstreamer import OutputStreamer
-from openshiftcli.errors import ResourceNotFound
+from OpenShiftLibrary.client import GenericClient
+from OpenShiftLibrary.outputformatter import OutputFormatter
+from OpenShiftLibrary.outputstreamer import OutputStreamer
+from OpenShiftLibrary.errors import ResourceNotFound
 
 
 class ServiceKeywords(object):

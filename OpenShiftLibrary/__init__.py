@@ -3,20 +3,20 @@ import urllib3
 from robotlibcore import DynamicCore
 
 
-from openshiftcli.keywords import (
+from OpenShiftLibrary.keywords import (
     GenericKeywords,
     EventKeywords,
     PodKeywords,
     ProjectKeywords,
     ServiceKeywords
 )
-from openshiftcli.client import AuthApiClient
-from openshiftcli.client import GenericApiClient
-from openshiftcli.dataloader import DataLoader
-from openshiftcli.dataparser import DataParser
-from openshiftcli.outputstreamer import LogStreamer
-from openshiftcli.outputformatter import PlaintextFormatter
-from openshiftcli.templateloader import TemplateLoader
+from OpenShiftLibrary.client import AuthApiClient
+from OpenShiftLibrary.client import GenericApiClient
+from OpenShiftLibrary.dataloader import DataLoader
+from OpenShiftLibrary.dataparser import DataParser
+from OpenShiftLibrary.outputstreamer import LogStreamer
+from OpenShiftLibrary.outputformatter import PlaintextFormatter
+from OpenShiftLibrary.templateloader import TemplateLoader
 
 
 from .version import VERSION
@@ -26,7 +26,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 __version__ = VERSION
 
 
-class openshiftcli(DynamicCore):
+class OpenShiftLibrary(DynamicCore):
     """
      This Test library provides keywords to work with openshift
       and various helper methods to check pod, service and related

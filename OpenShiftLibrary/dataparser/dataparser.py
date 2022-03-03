@@ -3,8 +3,8 @@ import yaml
 
 from typing import Any, Dict, List
 
-from openshiftcli.dataparser import JsonParser
-from openshiftcli.dataparser import YamlParser
+from OpenShiftLibrary.dataparser import JsonParser
+from OpenShiftLibrary.dataparser import YamlParser
 
 
 class DataParser(YamlParser, JsonParser):

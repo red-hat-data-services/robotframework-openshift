@@ -1,6 +1,6 @@
 *** Settings ***
-Documentation     openshiftcli Library
-Library      openshiftcli
+Documentation     OpenShiftLibrary Library
+Library      OpenShiftLibrary
 
 *** Test Cases ***
 Test Filter

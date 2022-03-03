@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
 
-from openshiftcli.outputformatter import OutputFormatter
+from OpenShiftLibrary.outputformatter import OutputFormatter
 
 
 class PlaintextFormatter(OutputFormatter):

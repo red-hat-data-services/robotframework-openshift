@@ -8,7 +8,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse
 
 from robot.api.exceptions import Error
 
-from openshiftcli.client import AuthClient
+from OpenShiftLibrary.client import AuthClient
 
 
 class AuthApiClient(AuthClient):

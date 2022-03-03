@@ -5,7 +5,7 @@ from openshift.dynamic import DynamicClient
 
 from urllib import parse
 
-from openshiftcli.client import GenericClient
+from OpenShiftLibrary.client import GenericClient
 
 
 class GenericApiClient(GenericClient):

@@ -7,14 +7,14 @@ from typing import Any, Dict, List, Optional, Union
 
 from robotlibcore import keyword
 
-from openshiftcli.client.authclient import AuthClient
-from openshiftcli.client import GenericClient
-from openshiftcli.dataloader import DataLoader
-from openshiftcli.dataparser import DataParser
-from openshiftcli.errors import ResourceOperationFailed
-from openshiftcli.outputformatter import OutputFormatter
-from openshiftcli.outputstreamer import OutputStreamer
-from openshiftcli.templateloader import TemplateLoader
+from OpenShiftLibrary.client.authclient import AuthClient
+from OpenShiftLibrary.client import GenericClient
+from OpenShiftLibrary.dataloader import DataLoader
+from OpenShiftLibrary.dataparser import DataParser
+from OpenShiftLibrary.errors import ResourceOperationFailed
+from OpenShiftLibrary.outputformatter import OutputFormatter
+from OpenShiftLibrary.outputstreamer import OutputStreamer
+from OpenShiftLibrary.templateloader import TemplateLoader
 
 
 class GenericKeywords(object):
@@ -147,7 +147,7 @@ class GenericKeywords(object):
                      'label_selector': label_selector, 'field_selector': field_selector,
                      **kwargs}
         result = self._operate(kind, operation, **arguments)
-
+        self.output_streamer.stream(result, 'info')
         if isinstance(result, Dict):
             items = result.get('items')
 

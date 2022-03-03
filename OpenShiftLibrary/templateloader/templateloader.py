@@ -2,7 +2,7 @@ import yaml
 
 from jinja2 import BaseLoader, Environment
 
-from openshiftcli.templateloader import Jinja2Loader
+from OpenShiftLibrary.templateloader import Jinja2Loader
 
 
 class TemplateLoader(Jinja2Loader):

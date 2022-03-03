@@ -14,13 +14,13 @@ repos:
     hooks:
       - id: flake8
         exclude: >
-          (?x)^(openshiftcli/keywords/__init__.py |
-            openshiftcli/cliclient/__init__.py |
-            openshiftcli/dataloader/__init__.py |
-            openshiftcli/dataparser/__init__.py |
-            openshiftcli/base/__init__.py |
-            openshiftcli/outputformatter/__init__.py |
-            openshiftcli/outputstreamer/__init__.py
+          (?x)^(OpenShiftLibrary/keywords/__init__.py |
+            OpenShiftLibrary/cliclient/__init__.py |
+            OpenShiftLibrary/dataloader/__init__.py |
+            OpenShiftLibrary/dataparser/__init__.py |
+            OpenShiftLibrary/base/__init__.py |
+            OpenShiftLibrary/outputformatter/__init__.py |
+            OpenShiftLibrary/outputstreamer/__init__.py
             )$
   - repo: https://github.com/gklein/check_signoff
     rev: v1.0.5

@@ -4,7 +4,7 @@ robotframework-debuglibrary
 robotframework-seleniumlibrary
 robotframework-jupyterlibrary>=0.3.1
 ipython
-openshift
+openshift==0.12.1
 pre-commit
 pytest
 pytest-logger

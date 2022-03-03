@@ -1,4 +1,4 @@
-from openshiftcli import ProjectKeywords
+from OpenShiftLibrary import ProjectKeywords
 
 
 def test_get_projects():

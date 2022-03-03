@@ -4,8 +4,8 @@ import requests
 
 from robot.api.exceptions import Error
 
-from openshiftcli.dataloader import FileLoader
-from openshiftcli.dataloader import UrlLoader
+from OpenShiftLibrary.dataloader import FileLoader
+from OpenShiftLibrary.dataloader import UrlLoader
 
 
 class DataLoader(FileLoader, UrlLoader):

@@ -23,13 +23,13 @@ Openshift Cluster and perform various operations.
 """[1:-1]
 
 setup(
-    name='robotframework-openshiftcli',
+    name='robotframework-OpenShiftLibrary',
     version='1.0.1',
     description="Robotframework for OpenShift interactions via CLI",
     long_description=DESCRIPTION,
     author='Pablo Félix Estévez Pico',
     author_email='pestevez@redhat.com',
-    url='https://github.com/red-hat-data-services/robotframework-openshiftcli',
+    url='https://github.com/red-hat-data-services/robotframework-OpenShiftLibrary',
     license='Apache License 2.0',
     keywords='robotframework openshift cli',
     platforms='any',
@@ -40,7 +40,7 @@ setup(
         "robotframework-seleniumlibrary",
         "robotframework-jupyterlibrary>=0.3.1",
         "ipython",
-        "openshift",
+        "openshift==0.12.1",
         "pre-commit",
         "pytest",
         "pytest-logger",

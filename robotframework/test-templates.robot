@@ -32,3 +32,8 @@ Test Template 6
   @{list} =  Oc Apply  Pod  test-data/template.yaml  namespace=default  template_data=${template_data}
   &{dictionary} =  Set Variable  ${list}[0]
   Oc Delete  kind=Pod  name=${dictionary.metadata.name}  namespace=default
+
+Test Template 7
+  @{list} =  Oc Apply  Pod  ${CURDIR}/../test-data/template.yaml  namespace=default  template_data={image: 'nginx', name: 'absolute-path'}
+  &{dictionary} =  Set Variable  ${list}[0]
+  Oc Delete  kind=Pod  name=${dictionary.metadata.name}  namespace=default

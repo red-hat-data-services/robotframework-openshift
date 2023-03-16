@@ -10,8 +10,9 @@ from OpenShiftLibrary.dataloader import UrlLoader
 
 class DataLoader(FileLoader, UrlLoader):
     def from_file(self, path: str) -> str:
-        cwd = os.getcwd()
-        with open(rf'{cwd}/{path}') as file:
+        if not os.path.isabs(path):
+            path = os.path.join(os.getcwd(), path)
+        with open(rf'{path}') as file:
             return file.read()
 
     def from_url(self, path: str) -> str:

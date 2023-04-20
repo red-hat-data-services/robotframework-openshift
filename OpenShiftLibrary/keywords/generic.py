@@ -288,12 +288,13 @@ class GenericKeywords(object):
                 return self.data_loader.from_file(src)
             except Exception as error:
                 self._handle_error(operation, f"Load data from file failed\n{error}")
-        if validators.url(src):
+        elif validators.url(src):
             try:
                 return self.data_loader.from_url(src)
             except Exception as error:
                 self._handle_error(operation, f"Load data from url failed\n{error}")
-        return src
+        else:
+            self._handle_error(operation, f"src argument was not a valid URL or file: {src}")
 
     def _load_template_data(self, operation: str, data: str, template_data: str) -> str:
         result: str

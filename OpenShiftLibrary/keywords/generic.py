@@ -376,7 +376,7 @@ class GenericKeywords(object):
             item = item.get(field[0:-3], None) or item.get(field[0: -2], None)
             if item:
                 str_idx = field[-2:-1]
-                if str_idx is not '*' and str_idx is not '[':
+                if str_idx != '*' and str_idx != '[':
                     idx = int(str_idx) if str_idx.isdecimal() else None
                     item = item[idx] if idx is not None and idx < len(item) else None
         else:
